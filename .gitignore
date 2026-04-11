@@ -1,0 +1,9 @@
+*.exe
+*.out
+*.o
+*.obj
+.DS_Store
+*/visualisation/plots/
+*/results
+build/*
+!build/.gitkeep
