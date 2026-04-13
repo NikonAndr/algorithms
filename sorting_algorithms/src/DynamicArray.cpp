@@ -15,11 +15,34 @@ DynamicArray::DynamicArray(const DynamicArray& other)
 
     Array = new int[capacity];
 
-    for (int i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         Array[i] = other.Array[i];
     }
 }
+
+DynamicArray& DynamicArray::operator=(const DynamicArray& other)
+{
+    if (this == &other)
+    {
+        return *this;
+    }
+
+    delete[] Array;
+
+    size = other.size;
+    capacity = other.capacity;
+
+    Array = new int[capacity];
+
+    for (size_t i = 0; i < size; i++)
+    {
+        Array[i] = other.Array[i];
+    }
+
+    return *this;
+}
+
 
 DynamicArray::~DynamicArray()
 {
@@ -33,7 +56,7 @@ void DynamicArray::ensure_capacity()
         int new_capacity = capacity * 2;
         int* new_Array = new int[new_capacity];
         
-        for (int i = 0; i < size; i++)
+        for (size_t i = 0; i < size; i++)
         {
             new_Array[i] = Array[i];
         }
@@ -59,12 +82,12 @@ void DynamicArray::set_element(int index, int value)
     Array[index] = value;
 }
 
-int* DynamicArray::get_array()
+int* DynamicArray::get_array() const
 {
     return Array;
 }
 
-int DynamicArray::size_of()
+size_t DynamicArray::size_of() const
 {
     return size;
 }
@@ -72,7 +95,7 @@ int DynamicArray::size_of()
 void DynamicArray::print()
 {
     std::cout << "[";
-    for (int i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         std::cout << Array[i];
         if (i != size - 1)

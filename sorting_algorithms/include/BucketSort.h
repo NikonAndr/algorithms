@@ -1,3 +1,4 @@
+#pragma once
 #include "DynamicArray.h"
 #include "InsertionSort.h"
 

@@ -1,11 +1,10 @@
-#pragma once
 #include "InsertionSort.h"
 #include <iostream>
 
 void InsertionSort(DynamicArray& arr)
 {
     int* A = arr.get_array();
-    int n = arr.size_of();
+    size_t n = arr.size_of();
 
     for (int i = 1; i < n; i++)
     {

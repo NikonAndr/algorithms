@@ -1,18 +1,13 @@
 #include "QuickSort.h"
 #include "MergeSort.h"
+#include "BucketSort.h"
+#include "csvReader.h"
+#include "Benchmark.h"
+#include "Interface.h"
 
 int main()
 {
-    DynamicArray arr;
+    Interface interface;
 
-    for (int i = 10; i >= 0; i--)
-    {
-        arr.push_back(i);
-    }
-
-    arr.print();
-
-    MergeSort(arr);
-
-    arr.print();
+    interface.main_if();
 }
