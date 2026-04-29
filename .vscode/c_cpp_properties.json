@@ -3,7 +3,7 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/sorting_algorithms/include"
+                "${workspaceFolder}/graphs/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",
