@@ -1,7 +1,10 @@
-#include "Board.h"
+#include "Interface.h"
+#include <iostream>
 
 int main()
 {
     Board b;
-    b.print_board();
-}
+    Interface interface(b);
+
+    interface.show_if();
+}   

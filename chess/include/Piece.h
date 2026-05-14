@@ -8,3 +8,4 @@ struct Piece
     Figure type = EMPTY;
     Color color = NONE;
 };
+
