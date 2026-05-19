@@ -42,7 +42,44 @@ void Parser::makeMove(const std::string& s)
         return;
     }
     
-    Move m = {old_pos.first, old_pos.second, new_pos.first, new_pos.second};
+    Piece p = b.getPiece(old_pos.first, old_pos.second);
+    bool is_castle = false;
+    bool is_enPassant = false;
+    
 
-    b.makeMove(m);
+    if (p.type == KING && abs(new_pos.second - old_pos.second) == 2)
+        is_castle = true;
+    
+    if (p.type == PAWN)
+    {
+        auto ep = b.getEnPassantSquare();
+
+        if (ep != std::pair<int,int>{-1, -1} &&
+            new_pos.first == ep.first &&
+            new_pos.second == ep.second &&
+            std::abs(new_pos.second - old_pos.second) == 1 &&
+            ((p.color == WHITE && new_pos.first == old_pos.first - 1) ||
+            (p.color == BLACK && new_pos.first == old_pos.first + 1)))
+        {
+            is_enPassant = true;
+        }
+    }
+    
+
+    if (is_castle)
+    {
+        Move m = {old_pos.first, old_pos.second, new_pos.first, new_pos.second, EMPTY, true};
+        b.makeMove(m);
+    }
+    else if (is_enPassant)
+    {
+        std::cout << "DEBUG: ENPASSANT TRIGGERED\n";
+        Move m = {old_pos.first, old_pos.second, new_pos.first, new_pos.second, EMPTY, false, true};
+        b.makeMove(m);
+    }
+    else
+    {
+        Move m = {old_pos.first, old_pos.second, new_pos.first, new_pos.second};
+        b.makeMove(m);
+    }
 }
