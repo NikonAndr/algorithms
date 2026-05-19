@@ -6,7 +6,7 @@
 #include <exception>
 #include <algorithm>
 
-Board::Board(bool castle_test) : castle_test(castle_test)
+Board::Board(bool castle_test, bool promotion_test) : castle_test(castle_test), promotion_test(promotion_test)
 {
     init_board();
 }
@@ -20,6 +20,15 @@ void Board::init_board()
 
         board[7] = {{ {ROOK, WHITE},{EMPTY, NONE}, {EMPTY, NONE}, {EMPTY, NONE}, 
         {KING, WHITE}, {EMPTY, NONE}, {EMPTY, NONE},{ROOK, WHITE} }};
+    }
+    else if (promotion_test)
+    {
+        board[0][0] = {KING, BLACK};
+        board[7][7] = {KING, WHITE};
+
+        board[1][3] = {PAWN, WHITE};
+        board[1][6] = {PAWN, WHITE};
+        board[6][7] = {PAWN, BLACK};
     }
     else
     {
@@ -101,6 +110,13 @@ const std::array<std::array<Piece, 8>, 8>& Board::get_board() const
 
 bool Board::makeMove(const Move& move)
 {
+
+    //debug 
+    if (move.promotion != EMPTY)
+    {
+        std::cout << "PROMOTION: " << move.promotion << "\n";
+    }
+
     if (move.fromRow < 0 || move.fromRow >= 8 || move.fromCol < 0 || move.fromCol >= 8)
         return false;
 
@@ -120,8 +136,8 @@ bool Board::makeMove(const Move& move)
 
     if (std::find(legal_moves.begin(), legal_moves.end(), move) == legal_moves.end())
     {
-        //debug 
-        std::cout << "illegal move!\n";
+        std::cout << "no legal moves!\n";
+        std::cout << legal_moves.size() << "\n";
         return false;
     }
 
@@ -147,6 +163,11 @@ bool Board::makeMove(const Move& move)
             temp.board[move.fromRow][enPassantColCaptured] = {EMPTY, NONE};
         }
 
+        if (move.promotion != EMPTY)
+        {
+            temp.board[move.toRow][move.toCol] = {move.promotion, old_p.color};
+        }
+
         if (temp.isInCheck(old_p.color))
         {
             std::cout << "King is in check after move!\n";
@@ -154,7 +175,6 @@ bool Board::makeMove(const Move& move)
         }
     }
 
-    
     //copy properties of the old_p to the new_p 
     board[move.toRow][move.toCol] = old_p;
     //set old_p as an empty piece
@@ -195,6 +215,12 @@ bool Board::makeMove(const Move& move)
     if (move.isEnPassant)
     {
         board[move.fromRow][enPassantColCaptured] = {EMPTY, NONE};
+    }
+
+    //Promote pawn
+    if (move.promotion != EMPTY)
+    {
+        board[move.toRow][move.toCol] = {move.promotion, old_p.color};
     }
 
     //set flags
@@ -354,4 +380,9 @@ std::pair<int, int> Board::getEnPassantSquare() const
 int Board::getHalfMoveClock() const
 {
     return halfMoveClock;
+}
+
+Color Board::getCurrentTurn() const
+{
+    return currentTurn;
 }

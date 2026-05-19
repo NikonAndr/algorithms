@@ -20,7 +20,7 @@ private:
 
     void init_board();
 public:
-    Board(bool castle_test = false);
+    Board(bool castle_test = false, bool promotion_test = false);
     void print_board();
 
     std::string map_position(int row, int col) const;
@@ -44,7 +44,9 @@ public:
     bool hasEnPassant() const;
     std::pair<int, int> getEnPassantSquare() const;
     int getHalfMoveClock() const;
+    Color getCurrentTurn() const;
 
     bool castle_test = false;
+    bool promotion_test = false;
 
 };

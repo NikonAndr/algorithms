@@ -80,9 +80,6 @@ bool isQueensideCastleLegal(Color color, const Board& board)
 std::vector<Move> getLegalMoves(const Board& board, int row, int col)
 {
     Piece p = board.getPiece(row, col);
-
-    //debug
-    //std::cout << "\n" << p.color << " " << p.type << " " << board.map_position(row, col) << "\n" ;
     
     const auto& b = board.get_board();
     std::vector<Move> legal_moves;
@@ -109,7 +106,19 @@ std::vector<Move> getLegalMoves(const Board& board, int row, int col)
             b[nextRow][col].type == EMPTY
         )
         {
-            legal_moves.push_back({row, col, nextRow, col});
+            //promotion
+            if (p.color == board.getCurrentTurn() &&
+                ((p.color == WHITE && nextRow == 0) ||
+                p.color == BLACK && nextRow == 7))
+            {
+                legal_moves.push_back({row, col, nextRow, col, QUEEN});
+                legal_moves.push_back({row, col, nextRow, col, BISHOP});
+                legal_moves.push_back({row, col, nextRow, col, KNIGHT});
+                legal_moves.push_back({row, col, nextRow, col, ROOK});
+            }
+            //normal
+            else
+                legal_moves.push_back({row, col, nextRow, col});
         }
 
         //move 2 spaces

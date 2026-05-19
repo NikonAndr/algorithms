@@ -30,6 +30,7 @@ void Interface::show_if()
 
             std::cout << "getHalfMoveClock: " << board.getHalfMoveClock() << "\n";
         }
+        std::cout << "(" << (board.getCurrentTurn() == WHITE ? "WHITE" : "BLACK" ) << "): ";
         std::cin >> move;
 
         parser.makeMove(move);
