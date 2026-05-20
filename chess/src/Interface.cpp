@@ -1,15 +1,30 @@
 #include "Interface.h"
 #include <iostream>
 
-Interface::Interface(Board& b) : board(b), parser(b) {};
+Interface::Interface(Board& b, AI bot) : board(b), parser(b), AIbot(bot) {};
 
 void Interface::show_if()
 {
     while (true)
     {
-        std::string move;
-        board.print_board();
+        if (board.isCheckmate(board.getCurrentTurn()))
+        {
+            board.print_board();
+            Color winner = board.getCurrentTurn() == WHITE ? BLACK : WHITE;
 
+            std::cout << (winner == WHITE ? "WHITE" : "BLACK") << " wins by checkmate!\n";
+            break;
+        }
+
+        if (board.isStalemate(board.getCurrentTurn()))
+        {
+            board.print_board();
+            std::cout << "Stalemate! Draw!\n";
+            break;
+        }
+
+        board.print_board();
+        
         if (debug)
         {
             std::cout << "canCastleKingside(WHITE): " << board.canCastleKingside(WHITE) << "\n";
@@ -30,9 +45,34 @@ void Interface::show_if()
 
             std::cout << "getHalfMoveClock: " << board.getHalfMoveClock() << "\n";
         }
-        std::cout << "(" << (board.getCurrentTurn() == WHITE ? "WHITE" : "BLACK" ) << "): ";
-        std::cin >> move;
 
-        parser.makeMove(move);
+        if (!against_ai)
+        {
+            std::cout << "(" << (board.getCurrentTurn() == WHITE ? "WHITE" : "BLACK" ) << "): ";
+
+            std::string move;
+            std::cin >> move;
+
+            parser.makeMove(move);
+        }
+        else
+        {
+            Color current = board.getCurrentTurn();
+
+            if (current == AIbot.getAIColor())
+            {
+                Move m = AIbot.getBestMove(board);
+                board.makeMove(m);
+            }
+            else 
+            {
+                std::cout << "(" << (board.getCurrentTurn() == WHITE ? "WHITE" : "BLACK" ) << "): ";
+
+                std::string move;
+                std::cin >> move;
+
+                parser.makeMove(move);
+            }
+        }
     }
 }

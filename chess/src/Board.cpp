@@ -6,7 +6,8 @@
 #include <exception>
 #include <algorithm>
 
-Board::Board(bool castle_test, bool promotion_test) : castle_test(castle_test), promotion_test(promotion_test)
+Board::Board(bool castle_test, bool promotion_test, bool checkmate_test) : castle_test(castle_test), 
+    promotion_test(promotion_test), checkmate_test(checkmate_test)
 {
     init_board();
 }
@@ -29,6 +30,15 @@ void Board::init_board()
         board[1][3] = {PAWN, WHITE};
         board[1][6] = {PAWN, WHITE};
         board[6][7] = {PAWN, BLACK};
+    }
+    else if (checkmate_test)
+    {
+        board[0][0] = {KING, BLACK};
+        board[7][7] = {KING, WHITE};
+
+        board[7][1] = {QUEEN, WHITE};
+        board[3][7] = {ROOK, WHITE};
+        board[4][7] = {ROOK, WHITE};
     }
     else
     {
@@ -81,13 +91,21 @@ void Board::print_board()
             {
                 if (p.color != WHITE && p.color != BLACK)
                 {
-                    throw std::runtime_error("Piece type is not EMPTY, neighter WHITE or BLACK");
+                    throw std::runtime_error("[BOARD - print] Piece type is not EMPTY, neighter WHITE or BLACK");
                 }
                 std::cout << (p.color == WHITE ? W[p.type] : B[p.type]);
             }
         }
-        std::cout << "\n";
+        std::cout << " " << nums[7-i] << "\n";
     }
+
+    std::cout << "  ";
+    for (const char* l : letters)
+    {
+        std::cout << l;
+    }
+
+    std::cout << "\n";
 }
 
 std::string Board::map_position(int row, int col) const
@@ -110,13 +128,6 @@ const std::array<std::array<Piece, 8>, 8>& Board::get_board() const
 
 bool Board::makeMove(const Move& move)
 {
-
-    //debug 
-    if (move.promotion != EMPTY)
-    {
-        std::cout << "PROMOTION: " << move.promotion << "\n";
-    }
-
     if (move.fromRow < 0 || move.fromRow >= 8 || move.fromCol < 0 || move.fromCol >= 8)
         return false;
 
@@ -170,7 +181,7 @@ bool Board::makeMove(const Move& move)
 
         if (temp.isInCheck(old_p.color))
         {
-            std::cout << "King is in check after move!\n";
+            //std::cout << "King is in check after move!\n";
             return false;
         }
     }
@@ -353,6 +364,47 @@ bool Board::isInCheck(Color color) const
     }
 
     return false;
+}
+
+bool Board::hasAnyLegalMove(Color color) const
+{
+    for (int r = 0; r < 8; r++)
+    {
+        for (int c = 0; c < 8; c++)
+        {
+            Piece p = getPiece(r, c);
+
+            if (p.color != color)
+                continue;
+
+            
+            const auto legal_moves = getLegalMoves(*this, r, c);
+
+            for (const auto& move : legal_moves)
+            {
+                Board temp = *this;
+
+                if (!temp.makeMove(move))
+                    continue;
+                
+                if (!temp.isInCheck(color))
+                    return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool Board::isCheckmate(Color color) const
+{
+    return isInCheck(color) && !hasAnyLegalMove(color);
+}
+
+
+bool Board::isStalemate(Color color) const
+{
+    return !isInCheck(color) && !hasAnyLegalMove(color);
 }
 
 bool Board::canCastleKingside(Color color) const

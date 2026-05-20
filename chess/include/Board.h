@@ -20,7 +20,8 @@ private:
 
     void init_board();
 public:
-    Board(bool castle_test = false, bool promotion_test = false);
+    Board(bool castle_test = false, bool promotion_test = false, 
+        bool checkmate_test = false);
     void print_board();
 
     std::string map_position(int row, int col) const;
@@ -35,6 +36,8 @@ public:
 
     bool isInCheck(Color color) const;
 
+    bool hasAnyLegalMove(Color color) const;
+
     bool isCheckmate(Color color) const;
     bool isStalemate(Color color) const;
 
@@ -44,9 +47,11 @@ public:
     bool hasEnPassant() const;
     std::pair<int, int> getEnPassantSquare() const;
     int getHalfMoveClock() const;
+    Figure getPromotion() const;
     Color getCurrentTurn() const;
 
     bool castle_test = false;
     bool promotion_test = false;
+    bool checkmate_test = false;
 
 };
