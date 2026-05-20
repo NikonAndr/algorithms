@@ -1,7 +1,10 @@
 #include "Interface.h"
 #include <iostream>
 
-Interface::Interface(Board& b, AI bot) : board(b), parser(b), AIbot(bot) {};
+#include <chrono>
+#include <thread>
+
+Interface::Interface(Board& b, AI bot, AI bot2) : board(b), parser(b), AIbot(bot), AIbot2(bot2) {};
 
 void Interface::show_if()
 {
@@ -46,7 +49,7 @@ void Interface::show_if()
             std::cout << "getHalfMoveClock: " << board.getHalfMoveClock() << "\n";
         }
 
-        if (!against_ai)
+        if (!against_ai && !ai_against_ai)
         {
             std::cout << "(" << (board.getCurrentTurn() == WHITE ? "WHITE" : "BLACK" ) << "): ";
 
@@ -55,7 +58,7 @@ void Interface::show_if()
 
             parser.makeMove(move);
         }
-        else
+        else if (against_ai)
         {
             Color current = board.getCurrentTurn();
 
@@ -74,5 +77,29 @@ void Interface::show_if()
                 parser.makeMove(move);
             }
         }
+        else
+        {
+            if (AIbot.getAIColor() == AIbot2.getAIColor())
+            {
+                throw std::runtime_error("[Interface] both ai are the same color");
+            }
+
+            Color current = board.getCurrentTurn();
+
+            if (current == AIbot.getAIColor())
+            {
+                Move m = AIbot.getBestMove(board);
+                board.makeMove(m);
+            }
+            else
+            {
+                Move m = AIbot2.getBestMove(board);
+                board.makeMove(m);
+            }
+
+            std::this_thread::sleep_for(std::chrono::nanoseconds(10));
+            std::this_thread::sleep_until(std::chrono::system_clock::now() + std::chrono::seconds(1));
+        }
+
     }
 }

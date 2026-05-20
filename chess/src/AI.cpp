@@ -214,7 +214,7 @@ int AI::minimax(Board board, int depth, int alpha, int beta, bool maximizing) co
         for (const auto& move : allMoves)
         {
             Board next = board;
-            next.makeMove(move);
+            if(!next.makeMove(move)) continue;
             int score = minimax(next, depth - 1, alpha, beta, !maximizing);
 
             if (best < score)
@@ -234,7 +234,7 @@ int AI::minimax(Board board, int depth, int alpha, int beta, bool maximizing) co
         for (const auto& move : allMoves)
         {
             Board next = board;
-            next.makeMove(move);
+            if(!next.makeMove(move)) continue;
             int score = minimax(next, depth - 1, alpha, beta, maximizing);
 
             if (best > score)
@@ -277,7 +277,7 @@ Move AI::getBestMove(Board& board) const
     for (const auto& move : allMoves)
     {
         Board next = board;
-        next.makeMove(move);
+        if(!next.makeMove(move)) continue;
         int score = minimax(next, searchDepth - 1, min, max, false);
 
         if (best_score < score)
